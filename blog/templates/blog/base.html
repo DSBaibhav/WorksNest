@@ -3,26 +3,34 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>{% block title %}WYTs Blog{% endblock %}</title>
+  <title>{% block title %}Blog{% endblock %}</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
       --primary: #1a1a2e;
-      --accent: #d5334e;
-      --light-bg: #f8f9fa;
+      --accent: #e94560;
       --card-shadow: 0 4px 24px rgba(0,0,0,0.07);
       --radius: 12px;
     }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+
     body {
       font-family: 'Inter', sans-serif;
       background: #f4f4f8;
       color: #2d2d2d;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
+
     h1, h2, h3, .navbar-brand { font-family: 'Playfair Display', serif; }
 
-    /* Navbar */
     .navbar {
       background: var(--primary) !important;
       padding: 1rem 0;
@@ -48,7 +56,12 @@
     }
     .btn-write:hover { background: #c73652; transform: translateY(-1px); }
 
-    /* Cards */
+    /* Main content grows to fill space */
+    .main-content {
+      flex: 1;
+      padding: 2rem 0;
+    }
+
     .post-card {
       background: #fff;
       border-radius: var(--radius);
@@ -66,10 +79,8 @@
     .card-title a { color: var(--primary); text-decoration: none; }
     .card-title a:hover { color: var(--accent); }
 
-    /* Alerts */
     .alert { border-radius: var(--radius); border: none; font-size: 0.9rem; }
 
-    /* Forms */
     .form-control, .form-select {
       border-radius: 8px;
       border: 1.5px solid #e0e0e0;
@@ -81,24 +92,24 @@
     .btn-accent { background: var(--accent); color: #fff; border-radius: 50px; padding: 8px 28px; border: none; font-weight: 500; transition: all 0.2s; }
     .btn-accent:hover { background: #c73652; color: #fff; transform: translateY(-1px); }
 
-    /* Footer */
     footer {
       background: var(--primary);
       color: rgba(255,255,255,0.6);
       text-align: center;
       padding: 2rem 0;
-      margin-top: 4rem;
       font-size: 0.85rem;
+      margin-top: auto;
     }
     footer span { color: var(--accent); }
   </style>
   {% block extra_css %}{% endblock %}
 </head>
+
 <body>
 
 <nav class="navbar navbar-expand-lg">
   <div class="container">
-    <a class="navbar-brand" href="/">WY<span>Ts</span></a>
+    <a class="navbar-brand" href="/">WYTs<span>Blog</span></a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -110,12 +121,12 @@
           <li class="nav-item">
             <form method="POST" action="{% url 'logout' %}" style="margin:0;">
               {% csrf_token %}
-             <button type="submit" class="nav-link" 
-             style="background:none; border:none; cursor:pointer; padding: 0.5rem 0;">
-              Logout
-             </button>
-           </form>
-         </li>
+              <button type="submit" class="nav-link"
+                      style="background:none; border:none; cursor:pointer; padding: 0.5rem 0;">
+                Logout
+              </button>
+            </form>
+          </li>
         {% else %}
           <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
         {% endif %}
@@ -124,16 +135,19 @@
   </div>
 </nav>
 
-<div class="container py-4">
-  {% if messages %}
-    {% for message in messages %}
-      <div class="alert alert-{{ message.tags }} alert-dismissible fade show mt-2" role="alert">
-        {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-      </div>
-    {% endfor %}
-  {% endif %}
-  {% block content %}{% endblock %}
+<!-- This div grows to push footer down -->
+<div class="main-content">
+  <div class="container">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show mt-2" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+    {% block content %}{% endblock %}
+  </div>
 </div>
 
 <footer>
@@ -142,5 +156,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 {% block extra_js %}{% endblock %}
+
 </body>
 </html>

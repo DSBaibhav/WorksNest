@@ -1,0 +1,9 @@
+<h2>Edit Task</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    <input type="text" name="title" value="{{ todo.title }}" placeholder="Enter Task">
+    <button type="submit">Update</button>
+    <input type="date" name="due_date">
+    <button type="submit">Add</button>
+</form>

@@ -101,6 +101,22 @@
       margin-top: auto;
     }
     footer span { color: var(--accent); }
+    /* Mobile fixes */
+@media (max-width: 576px) {
+  .post-card img {
+    height: 160px;
+  }
+  h1 {
+    font-size: 1.5rem !important;
+  }
+  .card-body {
+    padding: 1rem;
+  }
+  .btn-accent {
+    width: 100%;
+    text-align: center;
+  }
+}
   </style>
   {% block extra_css %}{% endblock %}
 </head>

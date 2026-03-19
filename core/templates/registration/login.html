@@ -1,0 +1,37 @@
+{% extends 'core/base.html' %}
+{% block title %}Login — WorksNest{% endblock %}
+{% block content %}
+<style>
+  .auth-page { min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 2rem; }
+  .auth-card { width: 100%; max-width: 460px; background: var(--navy-2); border: 1px solid rgba(255,255,255,0.06); border-radius: var(--radius); padding: 3rem; }
+  .auth-logo { font-family: var(--font-heading); font-size: 1.8rem; font-weight: 800; color: var(--teal); text-align: center; margin-bottom: 0.5rem; }
+  .auth-title { font-family: var(--font-heading); font-size: 1.5rem; font-weight: 800; text-align: center; margin-bottom: 0.3rem; }
+  .auth-sub { color: var(--gray-400); text-align: center; font-size: 0.9rem; margin-bottom: 2rem; }
+  .auth-footer { text-align: center; margin-top: 1.5rem; color: var(--gray-400); font-size: 0.9rem; }
+  .auth-footer a { color: var(--teal); font-weight: 600; }
+</style>
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-logo">⬡ WorksNest</div>
+    <div class="auth-title">Welcome Back</div>
+    <div class="auth-sub">Login to your account</div>
+
+    <form method="POST">
+      {% csrf_token %}
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" name="username" placeholder="Enter your username" autofocus required />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" name="password" placeholder="Enter your password" required />
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">Login →</button>
+    </form>
+
+    <div class="auth-footer">
+      Don't have an account? <a href="{% url 'register' %}">Create one →</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

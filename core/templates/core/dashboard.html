@@ -1,0 +1,183 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Dashboard — WorksNest{% endblock %}
+
+{% block content %}
+<style>
+  .dashboard-layout {
+    display: grid; grid-template-columns: 260px 1fr; gap: 2rem;
+    max-width: 1300px; margin: 2rem auto; padding: 0 2rem;
+  }
+  .sidebar {
+    background: var(--navy-2); border: 1px solid rgba(255,255,255,0.06);
+    border-radius: var(--radius); padding: 1.5rem;
+    height: fit-content; position: sticky; top: 80px;
+  }
+  .sidebar-avatar {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: var(--navy-3); border: 2px solid var(--teal);
+    object-fit: cover; margin-bottom: 1rem; display: block;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-heading); font-size: 1.8rem; color: var(--teal);
+  }
+  .sidebar-avatar img { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; }
+  .sidebar-name { font-family: var(--font-heading); font-size: 1.05rem; font-weight: 700; margin-bottom: 0.3rem; }
+  .sidebar-role {
+    font-size: 0.78rem; color: var(--teal);
+    background: rgba(0,212,170,0.1); padding: 0.2rem 0.7rem;
+    border-radius: 50px; display: inline-block; margin-bottom: 1.5rem;
+  }
+  .sidebar-nav { display: flex; flex-direction: column; gap: 0.3rem; }
+  .sidebar-nav a {
+    display: flex; align-items: center; gap: 0.8rem;
+    padding: 0.75rem 1rem; border-radius: var(--radius-sm);
+    color: var(--gray-400); font-weight: 500; transition: var(--transition);
+  }
+  .sidebar-nav a:hover, .sidebar-nav a.active { background: rgba(0,212,170,0.1); color: var(--teal); }
+  .sidebar-nav .danger { color: #f87171 !important; }
+  .sidebar-nav .danger:hover { background: rgba(239,68,68,0.1) !important; color: #f87171 !important; }
+
+  .dash-main h1 { font-family: var(--font-heading); font-size: 1.8rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 1.5rem; }
+
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+  .stat-card {
+    background: var(--navy-2); border: 1px solid rgba(255,255,255,0.06);
+    border-radius: var(--radius); padding: 1.5rem; transition: var(--transition);
+  }
+  .stat-card:hover { border-color: rgba(0,212,170,0.2); transform: translateY(-2px); }
+  .stat-card-num { font-family: var(--font-heading); font-size: 2rem; font-weight: 800; color: var(--teal); }
+  .stat-card-label { color: var(--gray-400); font-size: 0.82rem; margin-top: 0.2rem; }
+
+  .data-table { background: var(--navy-2); border: 1px solid rgba(255,255,255,0.06); border-radius: var(--radius); overflow: hidden; margin-bottom: 2rem; }
+  .data-table-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: space-between; }
+  .data-table-header strong { font-family: var(--font-heading); font-size: 1rem; }
+  .data-row {
+    padding: 1.1rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.04);
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+    transition: var(--transition);
+  }
+  .data-row:hover { background: rgba(255,255,255,0.02); }
+  .data-row:last-child { border-bottom: none; }
+  .data-row-title { font-weight: 700; }
+  .data-row-sub { color: var(--gray-400); font-size: 0.82rem; margin-top: 0.2rem; }
+  .data-row-actions { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
+
+  .empty-state { padding: 3rem; text-align: center; color: var(--gray-400); }
+  .empty-state .emoji { font-size: 2.5rem; margin-bottom: 0.75rem; }
+
+  @media (max-width: 900px) {
+    .dashboard-layout { grid-template-columns: 1fr; }
+    .sidebar { position: static; }
+  }
+</style>
+
+<div class="dashboard-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-avatar">
+      {% if profile.profile_pic %}
+        <img src="{{ profile.profile_pic.url }}" alt="Avatar" />
+      {% else %}
+        {{ user.username|first|upper }}
+      {% endif %}
+    </div>
+    <div class="sidebar-name">{{ user.get_full_name|default:user.username }}</div>
+    <span class="sidebar-role">{% if profile.role == 'recruiter' %}Recruiter{% else %}Job Seeker{% endif %}</span>
+
+    <nav class="sidebar-nav">
+      <a href="{% url 'dashboard' %}" class="active">📊 Dashboard</a>
+      <a href="{% url 'profile_view' %}">👤 My Profile</a>
+      {% if profile.role == 'recruiter' %}
+        <a href="{% url 'job_create' %}">➕ Post a Job</a>
+        <a href="{% url 'company_profile' %}">🏢 Company</a>
+      {% else %}
+        <a href="{% url 'job_list' %}">🔍 Browse Jobs</a>
+        <a href="{% url 'my_applications' %}">📋 Applications</a>
+        <a href="{% url 'saved_jobs' %}">🔖 Saved Jobs</a>
+      {% endif %}
+      <a href="{% url 'logout_view' %}" class="danger" style="margin-top:1rem">🚪 Logout</a>
+    </nav>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="dash-main">
+    <h1>Welcome back, {{ user.get_full_name|default:user.username }} 👋</h1>
+
+    {% if profile.role == 'recruiter' %}
+    <!-- ── RECRUITER ── -->
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-card-num">{{ jobs.count }}</div><div class="stat-card-label">Total Jobs Posted</div></div>
+      <div class="stat-card"><div class="stat-card-num">{{ active_jobs }}</div><div class="stat-card-label">Active Listings</div></div>
+      <div class="stat-card"><div class="stat-card-num">{{ total_apps }}</div><div class="stat-card-label">Total Applications</div></div>
+    </div>
+
+    <div style="margin-bottom:1.5rem">
+      <a href="{% url 'job_create' %}" class="btn btn-primary">+ Post New Job</a>
+    </div>
+
+    <div class="data-table">
+      <div class="data-table-header">
+        <strong>Your Job Listings</strong>
+      </div>
+      {% for job in jobs %}
+      <div class="data-row">
+        <div>
+          <div class="data-row-title">{{ job.title }}</div>
+          <div class="data-row-sub">{{ job.location }} · {{ job.get_job_type_display }} · Posted {{ job.created_at|date:"M d, Y" }}</div>
+        </div>
+        <div class="data-row-actions">
+          <span class="badge {% if job.is_active %}badge-shortlisted{% else %}badge-rejected{% endif %}">
+            {% if job.is_active %}Active{% else %}Closed{% endif %}
+          </span>
+          <a href="{% url 'view_applications' job.pk %}" class="btn btn-ghost btn-sm">{{ job.applications.count }} Apps</a>
+          <a href="{% url 'job_edit' job.pk %}" style="color:var(--teal);font-size:0.85rem;font-weight:600">Edit</a>
+          <a href="{% url 'job_delete' job.pk %}" style="color:#f87171;font-size:0.85rem;font-weight:600">Delete</a>
+        </div>
+      </div>
+      {% empty %}
+      <div class="empty-state">
+        <div class="emoji">📭</div>
+        <p>No jobs posted yet.</p>
+        <a href="{% url 'job_create' %}" style="color:var(--teal);font-weight:600">Post your first job →</a>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% else %}
+    <!-- ── JOB SEEKER ── -->
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-card-num">{{ applications.count }}</div><div class="stat-card-label">Applications Sent</div></div>
+      <div class="stat-card"><div class="stat-card-num">{{ saved_jobs.count }}</div><div class="stat-card-label">Saved Jobs</div></div>
+    </div>
+
+    <div style="margin-bottom:1.5rem">
+      <a href="{% url 'job_list' %}" class="btn btn-primary">🔍 Browse Jobs</a>
+    </div>
+
+    <div class="data-table">
+      <div class="data-table-header">
+        <strong>Recent Applications</strong>
+        <a href="{% url 'my_applications' %}" style="color:var(--teal);font-size:0.85rem">View All →</a>
+      </div>
+      {% for app in applications|slice:":6" %}
+      <div class="data-row">
+        <div>
+          <div class="data-row-title">{{ app.job.title }}</div>
+          <div class="data-row-sub">{{ app.job.company.name }} · Applied {{ app.applied_at|date:"M d, Y" }}</div>
+        </div>
+        <span class="badge badge-{{ app.status }}">{{ app.get_status_display }}</span>
+      </div>
+      {% empty %}
+      <div class="empty-state">
+        <div class="emoji">📭</div>
+        <p>No applications yet.</p>
+        <a href="{% url 'job_list' %}" style="color:var(--teal);font-weight:600">Start browsing →</a>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </main>
+</div>
+
+{% endblock %}

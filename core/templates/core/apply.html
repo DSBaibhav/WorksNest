@@ -1,0 +1,64 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Apply — {{ job.title }} — WorksNest{% endblock %}
+
+{% block content %}
+<style>
+  .apply-layout { max-width: 800px; margin: 3rem auto; padding: 0 2rem; display: grid; grid-template-columns: 1fr 300px; gap: 2rem; }
+  .form-card { background: var(--navy-2); border: 1px solid rgba(255,255,255,0.06); border-radius: var(--radius); padding: 2.5rem; }
+  .form-title { font-family: var(--font-heading); font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 0.4rem; }
+  .form-subtitle { color: var(--gray-400); margin-bottom: 2rem; font-size: 0.9rem; }
+  .job-summary { background: var(--navy-2); border: 1px solid rgba(255,255,255,0.06); border-radius: var(--radius); padding: 1.8rem; height: fit-content; position: sticky; top: 90px; }
+  .job-summary h3 { font-family: var(--font-heading); font-weight: 700; margin-bottom: 1rem; color: var(--teal); }
+  .summary-title { font-weight: 700; font-size: 1.05rem; margin-bottom: 0.3rem; }
+  .summary-company { color: var(--gray-400); font-size: 0.9rem; margin-bottom: 1rem; }
+  .form-actions { display: flex; gap: 1rem; margin-top: 2rem; }
+  @media (max-width: 700px) { .apply-layout { grid-template-columns: 1fr; } .job-summary { position: static; } }
+</style>
+
+<div class="apply-layout">
+  <!-- FORM -->
+  <div class="form-card">
+    <div class="form-title">Apply for this Role</div>
+    <div class="form-subtitle">Stand out with a strong cover letter</div>
+
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label>Cover Letter</label>
+        <textarea name="cover_letter" rows="8" placeholder="Tell the recruiter why you're a great fit for this role. Mention relevant experience, skills, and why you're excited about this opportunity..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Resume / CV (optional — overrides profile resume)</label>
+        <input type="file" name="resume" accept=".pdf,.doc,.docx" />
+        {% if user.profile.resume %}
+          <small style="color:var(--gray-400);font-size:0.8rem">Your profile resume will be used if you don't upload one here.</small>
+        {% endif %}
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Submit Application →</button>
+        <a href="{% url 'job_detail' job.pk %}" class="btn btn-ghost">Cancel</a>
+      </div>
+    </form>
+  </div>
+
+  <!-- JOB SUMMARY SIDEBAR -->
+  <div class="job-summary">
+    <h3>You're applying to</h3>
+    <div class="summary-title">{{ job.title }}</div>
+    <div class="summary-company">{{ job.company.name }} · {{ job.location }}</div>
+    <div style="display:flex;flex-direction:column;gap:0.5rem">
+      <span class="tag" style="width:fit-content">{{ job.get_job_type_display }}</span>
+      <span class="tag tag-gray" style="width:fit-content">{{ job.get_level_display }}</span>
+    </div>
+    <div style="margin-top:1rem;color:var(--teal);font-weight:700;font-size:1.1rem">{{ job.get_salary_display }}</div>
+    {% if job.deadline %}
+    <div style="margin-top:0.75rem;color:var(--gray-400);font-size:0.85rem">Deadline: {{ job.deadline|date:"M d, Y" }}</div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

@@ -1,42 +1,84 @@
-# 💻 Django Projects
+# ⬡ WorksNest
 
-A collection of web applications built with Python and Django.
+A modern full-stack job portal built with Django. WorksNest connects job seekers with recruiters through a clean, responsive interface with role-based dashboards, real-time application tracking, and a seamless hiring workflow.
 
 ---
 
-## 📂 Projects
+## 🚀 Features
 
-### 1. 📝 Blog App
-A full-featured blogging platform where users can write, publish, and discuss posts.
+### Job Seekers
+- Browse and search job listings by title, type, and location
+- Apply to jobs with a cover letter and resume
+- Track application status in real time (Applied → Reviewing → Shortlisted → Hired)
+- Save jobs for later
+- Personal profile with skills, bio, resume and social links
 
-### 2. ✅ Todo App
-A task management app to create, track, and complete daily tasks.
+### Recruiters
+- Post, edit, and manage job listings
+- Company profile with logo and description
+- View all applications per job listing
+- Update applicant status with one click
+- Dashboard with stats on active jobs and total applications
+
+### General
+- Role-based registration (Job Seeker / Recruiter)
+- Secure login and logout
+- Responsive design — works on mobile and desktop
+- Dark navy UI with teal accents and 3D card animations
+- Flash notifications for all actions
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Backend:** Python, Django
-- **Frontend:** HTML5, CSS3, Bootstrap 5
-- **Database:** SQLite3
-- **Tools:** VS Code, Git, GitHub
+| Layer | Technology |
+|---|---|
+| Backend | Django 6.0 |
+| Database | SQLite (dev) / PostgreSQL (production) |
+| Frontend | HTML, CSS, Vanilla JS |
+| Auth | Django built-in auth |
+| Deployment | Render.com + Gunicorn + Whitenoise |
+| Storage | Pillow for image handling |
 
 ---
 
-## ⚙️ Setup & Installation
+## 📁 Project Structure
 
-These steps work for both projects.
+```
+xproject/
+├── WorksNest/          # Project config (settings, urls, wsgi)
+├── core/               # Main app
+│   ├── templates/
+│   │   ├── core/       # All page templates
+│   │   └── registration/
+│   ├── templatetags/   # Custom template filters
+│   ├── models.py       # Profile, Company, Job, Application, SavedJob
+│   ├── views.py        # All views
+│   ├── urls.py         # URL routing
+│   ├── forms.py        # Django forms
+│   └── admin.py        # Admin config
+├── static/             # CSS and JS
+├── media/              # User uploads
+├── requirements.txt
+├── Procfile
+└── manage.py
+```
+
+---
+
+## ⚙️ Local Setup
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/DSBaibhav/yourrepo.git
-cd yourrepo
+git clone https://github.com/yourusername/xproject.git
+cd xproject
 ```
 
-### 2. Create and activate a virtual environment
+### 2. Create and activate virtual environment
 ```bash
-python3 -m venv venv
-source venv/bin/activate
+python -m venv venv
+source venv/bin/activate        # Mac/Linux
+venv\Scripts\activate           # Windows
 ```
 
 ### 3. Install dependencies
@@ -44,86 +86,88 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 4. Apply migrations
+### 4. Create a `.env` file
+```env
+SECRET_KEY=your-secret-key-here
+DEBUG=True
+ALLOWED_HOSTS=localhost,127.0.0.1
+DATABASE_URL=sqlite:///db.sqlite3
+```
+
+### 5. Run migrations
 ```bash
+python manage.py makemigrations
 python manage.py migrate
 ```
 
-### 5. Create an admin account
+### 6. Create superuser
 ```bash
 python manage.py createsuperuser
 ```
 
-### 6. Run the server
+### 7. Run the server
 ```bash
 python manage.py runserver
 ```
 
-### 7. Open in browser
+Visit `http://127.0.0.1:8000`
+
+---
+
+## 🌐 Deployment (Render.com)
+
+### Environment Variables on Render
 ```
-http://127.0.0.1:8000
+SECRET_KEY     →  your-generated-secret-key
+DEBUG          →  False
+ALLOWED_HOSTS  →  yourappname.onrender.com
+DATABASE_URL   →  postgresql://... (from Render PostgreSQL)
+```
+
+### Build Command
+```
+pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate
+```
+
+### Start Command
+```
+gunicorn WorksNest.wsgi
 ```
 
 ---
 
-## 📝 Blog App — Features
+## 📸 Pages
 
-- User login and logout
-- Create, edit, and delete blog posts
-- Upload cover images for posts
-- Comment on posts
-- Delete your own comments
-- Pagination on home page
-- Clean responsive UI
-
----
-
-## ✅ Todo App — Features
-
-- Add and delete tasks
-- Mark tasks as complete or incomplete
-- Simple and minimal interface
-- User-specific task lists
+| Page | URL |
+|---|---|
+| Home | `/` |
+| Browse Jobs | `/jobs/` |
+| Job Detail | `/jobs/<id>/` |
+| Register | `/register/` |
+| Login | `/login/` |
+| Dashboard | `/dashboard/` |
+| Profile | `/profile/` |
+| Post a Job | `/recruiter/jobs/new/` |
+| Company Profile | `/recruiter/company/` |
+| My Applications | `/seeker/applications/` |
+| Saved Jobs | `/seeker/saved/` |
+| Admin Panel | `/admin/` |
 
 ---
 
-## 📁 Project Structure
-```
-repo/
-├── app1/                   # Blog application
-│   ├── templates
-│   ├── models.py
-│   ├── views.py
-│   ├── urls.py
-│   └── forms.py
-├── blog/                   # Todo application
-│   ├── templates/blog/
-│   ├── models.py
-│   ├── views.py
-│   └── urls.py
-├── .gitignore
-├── manage.py
-└── requirements.txt
-```
+## 👤 User Roles
 
----
+**Job Seeker**
+- Can browse, apply, save jobs
+- Has personal profile with resume
 
-## 🔑 Admin Panel
-```
-http://127.0.0.1:8000/admin/
-```
-
-Log in with your superuser credentials to manage all data.
-
----
-
-## 🙋‍♂️ Author
-
-**Baibhav Singh**
-Built with Django on macOS using VS Code.
+**Recruiter**
+- Can post and manage jobs
+- Has company profile
+- Can review and update application statuses
 
 ---
 
 ## 📄 License
 
-These projects are for personal and educational use.
+©️ 2026 WorksNest. All rights reserved.

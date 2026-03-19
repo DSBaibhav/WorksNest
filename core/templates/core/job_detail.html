@@ -1,19 +1,174 @@
 {% extends 'core/base.html' %}
-{% block title %}Delete Job — WorksNest{% endblock %}
+
+{% block title %}{{ job.title }} — WorksNest{% endblock %}
+
 {% block content %}
-<div style="max-width:500px;margin:5rem auto;padding:0 2rem;text-align:center">
-  <div style="background:var(--navy-2);border:1px solid rgba(239,68,68,0.2);border-radius:var(--radius);padding:3rem">
-    <div style="font-size:3rem;margin-bottom:1rem">⚠️</div>
-    <h2 style="font-family:var(--font-heading);font-size:1.5rem;font-weight:800;margin-bottom:0.5rem">Delete this job?</h2>
-    <p style="color:var(--gray-400);margin-bottom:2rem">
-      You are about to permanently delete <strong style="color:var(--white)">{{ job.title }}</strong>.
-      This will also remove all {{ job.applications.count }} application(s). This cannot be undone.
-    </p>
-    <form method="POST" style="display:flex;gap:1rem;justify-content:center">
-      {% csrf_token %}
-      <button type="submit" class="btn btn-danger">Yes, Delete</button>
-      <a href="{% url 'dashboard' %}" class="btn btn-ghost">Cancel</a>
-    </form>
+<style>
+  .job-detail-layout {
+    max-width: 1100px; margin: 3rem auto; padding: 0 2rem;
+    display: grid; grid-template-columns: 1fr 320px; gap: 2rem;
+  }
+  .job-main {
+    background: var(--navy-2);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: var(--radius); padding: 2.5rem;
+  }
+  .job-sidebar { display: flex; flex-direction: column; gap: 1.5rem; }
+  .sidebar-card {
+    background: var(--navy-2);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: var(--radius); padding: 1.8rem;
+  }
+  .job-header { display: flex; align-items: flex-start; gap: 1.2rem; margin-bottom: 2rem; }
+  .job-logo {
+    width: 70px; height: 70px; border-radius: 14px; flex-shrink: 0;
+    background: var(--navy-3); border: 1px solid rgba(255,255,255,0.1);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; color: var(--teal); font-size: 1.8rem; overflow: hidden;
+  }
+  .job-logo img { width: 100%; height: 100%; object-fit: cover; }
+  .job-header-info h1 {
+    font-family: var(--font-heading); font-size: 1.8rem;
+    font-weight: 800; letter-spacing: -0.5px; margin-bottom: 0.3rem;
+  }
+  .job-company-name { color: var(--gray-400); font-size: 1rem; margin-bottom: 0.8rem; }
+  .job-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .divider { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 2rem 0; }
+  .section-title {
+    font-family: var(--font-heading); font-size: 1.1rem;
+    font-weight: 700; margin-bottom: 1rem; color: var(--teal);
+  }
+  .job-desc { color: var(--gray-200); line-height: 1.8; white-space: pre-wrap; }
+  .info-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.75rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .info-row:last-child { border-bottom: none; }
+  .info-label { color: var(--gray-400); font-size: 0.85rem; }
+  .info-value { font-weight: 600; font-size: 0.95rem; }
+  .already-applied {
+    background: rgba(0,212,170,0.1); border: 1px solid rgba(0,212,170,0.3);
+    color: var(--teal); padding: 1rem; border-radius: var(--radius-sm);
+    text-align: center; font-weight: 600;
+  }
+  @media (max-width: 800px) {
+    .job-detail-layout { grid-template-columns: 1fr; }
+    .job-sidebar { order: -1; }
+  }
+</style>
+
+<div class="job-detail-layout">
+
+  <!-- MAIN -->
+  <div class="job-main">
+    <div class="job-header">
+      <div class="job-logo">
+        {% if job.company.logo %}
+          <img src="{{ job.company.logo.url }}" alt="" />
+        {% else %}
+          {{ job.company.name|first|upper }}
+        {% endif %}
+      </div>
+      <div class="job-header-info">
+        <h1>{{ job.title }}</h1>
+        <div class="job-company-name">{{ job.company.name }} · {{ job.location }}</div>
+        <div class="job-tags">
+          <span class="tag">{{ job.get_job_type_display }}</span>
+          <span class="tag tag-gray">{{ job.get_level_display }}</span>
+          {% if not job.is_active %}
+            <span class="tag tag-yellow">Closed</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <div class="section-title">About this Role</div>
+    <div class="job-desc">{{ job.description }}</div>
+
+    {% if job.requirements %}
+    <hr class="divider" />
+    <div class="section-title">Requirements</div>
+    <div class="job-desc">{{ job.requirements }}</div>
+    {% endif %}
+
+    {% if job.skills_required %}
+    <hr class="divider" />
+    <div class="section-title">Skills Required</div>
+    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.5rem">
+      {% for skill in skills_required %}
+        <span class="tag">{{ skill }}</span>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="job-sidebar">
+
+    <!-- Apply Card -->
+    <div class="sidebar-card">
+      <div style="font-family:var(--font-heading);font-size:1.5rem;font-weight:800;color:var(--teal);margin-bottom:0.3rem">
+        {{ job.get_salary_display }}
+      </div>
+      <div style="color:var(--gray-400);font-size:0.85rem;margin-bottom:1.5rem">
+        Posted {{ job.created_at|timesince }} ago
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:0.75rem">
+        {% if user.is_authenticated %}
+          {% if already_applied %}
+            <div class="already-applied">✓ Application Submitted</div>
+          {% elif user.profile.role == 'seeker' and job.is_active %}
+            <a href="{% url 'apply_job' job.pk %}" class="btn btn-primary" style="justify-content:center;text-align:center">
+              Apply Now
+            </a>
+          {% elif not job.is_active %}
+            <div class="already-applied" style="border-color:rgba(246,173,85,0.3);background:rgba(246,173,85,0.1);color:#f6ad55">
+              This job is closed
+            </div>
+          {% endif %}
+          <a href="{% url 'save_job' job.pk %}" class="btn btn-ghost btn-sm" style="justify-content:center">
+            {% if already_saved %}🔖 Saved{% else %}🔖 Save Job{% endif %}
+          </a>
+        {% else %}
+          <a href="{% url 'login' %}" class="btn btn-primary" style="justify-content:center">Login to Apply</a>
+          <a href="{% url 'register' %}" class="btn btn-ghost btn-sm" style="justify-content:center">Create Account</a>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Job Details Card -->
+    <div class="sidebar-card">
+      <div style="font-family:var(--font-heading);font-weight:700;margin-bottom:1rem">Job Details</div>
+      <div class="info-row"><span class="info-label">Type</span><span class="info-value">{{ job.get_job_type_display }}</span></div>
+      <div class="info-row"><span class="info-label">Level</span><span class="info-value">{{ job.get_level_display }}</span></div>
+      <div class="info-row"><span class="info-label">Location</span><span class="info-value">{{ job.location }}</span></div>
+      {% if job.deadline %}
+      <div class="info-row"><span class="info-label">Deadline</span><span class="info-value">{{ job.deadline|date:"M d, Y" }}</span></div>
+      {% endif %}
+      <div class="info-row"><span class="info-label">Applications</span><span class="info-value">{{ job.applications.count }}</span></div>
+    </div>
+
+    <!-- Company Card -->
+    <div class="sidebar-card">
+      <div style="font-family:var(--font-heading);font-weight:700;margin-bottom:1rem">About Company</div>
+      <div style="font-weight:700;margin-bottom:0.3rem">{{ job.company.name }}</div>
+      {% if job.company.industry %}
+        <div style="color:var(--gray-400);font-size:0.85rem;margin-bottom:0.5rem">{{ job.company.industry }}</div>
+      {% endif %}
+      {% if job.company.description %}
+        <div style="color:var(--gray-400);font-size:0.9rem;line-height:1.7">{{ job.company.description|truncatewords:30 }}</div>
+      {% endif %}
+      {% if job.company.website %}
+        <a href="{{ job.company.website }}" target="_blank" style="color:var(--teal);font-size:0.85rem;margin-top:0.75rem;display:inline-block">
+          Visit Website →
+        </a>
+      {% endif %}
+    </div>
+
   </div>
 </div>
+
 {% endblock %}

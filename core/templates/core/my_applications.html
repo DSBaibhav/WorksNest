@@ -4,35 +4,85 @@
 <style>
   .page-layout { max-width: 900px; margin: 3rem auto; padding: 0 2rem; }
   .page-title { font-family: var(--font-heading); font-size: 2rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 1.5rem; }
-  .data-table { background: var(--navy-2); border: 1px solid rgba(255,255,255,0.06); border-radius: var(--radius); overflow: hidden; }
-  .data-row { padding: 1.2rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.04); display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; transition: all 0.2s; }
-  .data-row:hover { background: rgba(255,255,255,0.02); }
-  .data-row:last-child { border-bottom: none; }
-  .row-title { font-weight: 700; }
-  .row-sub { color: var(--gray-400); font-size: 0.82rem; margin-top: 0.2rem; }
-  .empty { padding: 3rem; text-align: center; color: var(--gray-400); }
+  .app-card {
+    background: var(--navy-2); border: 1px solid rgba(255,255,255,0.06);
+    border-radius: var(--radius); padding: 1.8rem; margin-bottom: 1rem;
+    transition: all 0.3s;
+  }
+  .app-card:hover { border-color: rgba(0,212,170,0.2); }
+  .app-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+  .app-title { font-family: var(--font-heading); font-size: 1.1rem; font-weight: 700; }
+  .app-company { color: var(--gray-400); font-size: 0.85rem; margin-top: 0.2rem; }
+  .app-date { color: var(--gray-400); font-size: 0.8rem; }
+
+  /* Status banners */
+  .status-banner {
+    padding: 0.75rem 1rem; border-radius: var(--radius-sm);
+    font-size: 0.9rem; font-weight: 600;
+    display: flex; align-items: center; gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+  .status-hired     { background: rgba(72,187,120,0.1);  border: 1px solid rgba(72,187,120,0.3);  color: #48bb78; }
+  .status-rejected  { background: rgba(239,68,68,0.1);   border: 1px solid rgba(239,68,68,0.3);   color: #f87171; }
+  .status-shortlisted { background: rgba(0,212,170,0.1); border: 1px solid rgba(0,212,170,0.3);   color: #00d4aa; }
+  .status-reviewing { background: rgba(99,179,237,0.1);  border: 1px solid rgba(99,179,237,0.3);  color: #63b3ed; }
+  .status-applied   { background: rgba(148,163,184,0.1); border: 1px solid rgba(148,163,184,0.3); color: #94a3b8; }
+
+  .empty { text-align: center; padding: 4rem 2rem; color: var(--gray-400); }
 </style>
+
 <div class="page-layout">
-  <h1 class="page-title">My Applications</h1>
-  <div class="data-table">
-    {% for app in applications %}
-    <div class="data-row">
+  <h1 class="page-title">📋 My Applications</h1>
+
+  {% for app in applications %}
+  <div class="app-card">
+    <div class="app-header">
       <div>
-        <div class="row-title">{{ app.job.title }}</div>
-        <div class="row-sub">{{ app.job.company.name }} · {{ app.job.location }} · Applied {{ app.applied_at|date:"M d, Y" }}</div>
+        <div class="app-title">{{ app.job.title }}</div>
+        <div class="app-company">
+          {{ app.job.company.name }} · {{ app.job.location }}
+        </div>
       </div>
-      <div style="display:flex;align-items:center;gap:1rem">
-        <span class="badge badge-{{ app.status }}">{{ app.get_status_display }}</span>
-        <a href="{% url 'job_detail' app.job.pk %}" style="color:var(--teal);font-size:0.85rem;font-weight:600">View Job →</a>
-      </div>
+      <div class="app-date">Applied {{ app.applied_at|date:"M d, Y" }}</div>
     </div>
-    {% empty %}
-    <div class="empty">
-      <div style="font-size:2.5rem;margin-bottom:0.75rem">📭</div>
-      <p>You haven't applied to any jobs yet.</p>
-      <a href="{% url 'job_list' %}" class="btn btn-primary btn-sm" style="margin-top:1rem;display:inline-flex">Browse Jobs →</a>
+
+    <!-- STATUS BANNER — clearly visible to seeker -->
+    {% if app.status == 'hired' %}
+    <div class="status-banner status-hired">
+      🎉 Congratulations! You have been hired for this role!
     </div>
-    {% endfor %}
+
+    {% elif app.status == 'rejected' %}
+    <div class="status-banner status-rejected">
+      ❌ Unfortunately your application was not selected. Keep applying!
+    </div>
+
+    {% elif app.status == 'shortlisted' %}
+    <div class="status-banner status-shortlisted">
+      ⭐ Great news! You have been shortlisted. Expect to hear from the recruiter soon.
+    </div>
+
+    {% elif app.status == 'reviewing' %}
+    <div class="status-banner status-reviewing">
+      👀 Your application is currently under review.
+    </div>
+
+    {% else %}
+    <div class="status-banner status-applied">
+      📨 Application submitted. Waiting for recruiter response.
+    </div>
+    {% endif %}
+
+    <div style="margin-top:1rem">
+      <a href="{% url 'job_detail' app.job.pk %}" style="color:var(--teal);font-size:0.85rem;font-weight:600">View Job →</a>
+    </div>
   </div>
+  {% empty %}
+  <div class="empty">
+    <div style="font-size:3rem;margin-bottom:0.75rem">📭</div>
+    <p>No applications yet.</p>
+    <a href="{% url 'job_list' %}" class="btn btn-primary" style="margin-top:1.5rem;display:inline-flex">Browse Jobs →</a>
+  </div>
+  {% endfor %}
 </div>
 {% endblock %}

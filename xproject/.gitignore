@@ -26,5 +26,3 @@ DS_Store
 #Enviroment variables
 .env
 *.env
-app1/
-blog/

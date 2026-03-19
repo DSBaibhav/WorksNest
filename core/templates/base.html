@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}WorksNest{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/main.css' %}" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@600;700;800&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="{% url 'home' %}" class="brand">
+    <span class="brand-icon">⬡</span>WorksNest
+  </a>
+  <div class="nav-links">
+    <a href="{% url 'job_list' %}">Browse Jobs</a>
+    {% if user.is_authenticated %}
+      <a href="{% url 'dashboard' %}">Dashboard</a>
+      <a href="{% url 'profile' %}">Profile</a>
+      <a href="{% url 'logout_view' %}" class="btn-outline-sm">Logout</a>
+    {% else %}
+      <a href="{% url 'login' %}">Login</a>
+      <a href="{% url 'register' %}" class="btn-primary-sm">Get Started</a>
+    {% endif %}
+  </div>
+</nav>
+
+{% if messages %}
+<div class="messages-container">
+  {% for msg in messages %}
+  <div class="alert alert-{{ msg.tags }}">
+    {{ msg }}
+    <button class="alert-close" onclick="this.parentElement.remove()">×</button>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<main>{% block content %}{% endblock %}</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <span class="brand">⬡ WorksNest</span>
+    <p>Connecting talent with opportunity.</p>
+    <small>©️ 2025 WorksNest. All rights reserved.</small>
+  </div>
+</footer>
+
+<script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>

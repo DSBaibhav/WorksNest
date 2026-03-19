@@ -118,7 +118,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']   # where YOUR static files live
+STATIC_ROOT = BASE_DIR / 'staticfiles'     # ← THIS is what was missing
 
 # Crispy Forms
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
@@ -132,3 +134,16 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Login redirect
 LOGIN_REDIRECT_URL = 'blog-home'
 LOGIN_URL = 'login'
+
+import os
+
+if not DEBUG:
+    # Security settings — only active in production
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_BROWSER_XSS_FILTER = True
+    X_FRAME_OPTIONS = 'DENY'

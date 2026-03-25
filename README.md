@@ -1,6 +1,8 @@
 # ⬡ WorksNest
 
-A modern full-stack job portal built with Django. WorksNest connects job seekers with recruiters through a clean, responsive interface with role-based dashboards, real-time application tracking, and a seamless hiring workflow.
+A modern full-stack job portal web application built with Django, connecting job seekers with recruiters through a clean, responsive interface with role-based dashboards and real-time application tracking.
+
+🌐 **Live Demo:** [https://worksnest.onrender.com](https://worksnest.onrender.com)
 
 ---
 
@@ -9,7 +11,7 @@ A modern full-stack job portal built with Django. WorksNest connects job seekers
 ### Job Seekers
 - Browse and search job listings by title, type, and location
 - Apply to jobs with a cover letter and resume
-- Track application status in real time (Applied → Reviewing → Shortlisted → Hired)
+- Track application status in real time — Applied → Reviewing → Shortlisted → Hired / Rejected
 - Save jobs for later
 - Personal profile with skills, bio, resume and social links
 
@@ -21,10 +23,10 @@ A modern full-stack job portal built with Django. WorksNest connects job seekers
 - Dashboard with stats on active jobs and total applications
 
 ### General
-- Role-based registration (Job Seeker / Recruiter)
+- Role-based registration — Job Seeker or Recruiter
 - Secure login and logout
 - Responsive design — works on mobile and desktop
-- Dark navy UI with teal accents and 3D card animations
+- Dark navy UI with teal accents and smooth animations
 - Flash notifications for all actions
 
 ---
@@ -34,11 +36,13 @@ A modern full-stack job portal built with Django. WorksNest connects job seekers
 | Layer | Technology |
 |---|---|
 | Backend | Django 6.0 |
+| Language | Python 3.14 |
 | Database | SQLite (dev) / PostgreSQL (production) |
-| Frontend | HTML, CSS, Vanilla JS |
-| Auth | Django built-in auth |
-| Deployment | Render.com + Gunicorn + Whitenoise |
-| Storage | Pillow for image handling |
+| Frontend | HTML, CSS, Vanilla JavaScript |
+| Auth | Django built-in authentication |
+| Server | Gunicorn (WSGI) |
+| Static Files | Whitenoise |
+| Deployment | Render.com |
 
 ---
 
@@ -46,21 +50,22 @@ A modern full-stack job portal built with Django. WorksNest connects job seekers
 
 ```
 xproject/
-├── WorksNest/          # Project config (settings, urls, wsgi)
-├── core/               # Main app
+├── WorksNest/              # Project config (settings, urls, wsgi)
+├── core/                   # Main app
 │   ├── templates/
-│   │   ├── core/       # All page templates
-│   │   └── registration/
-│   ├── templatetags/   # Custom template filters
-│   ├── models.py       # Profile, Company, Job, Application, SavedJob
-│   ├── views.py        # All views
-│   ├── urls.py         # URL routing
-│   ├── forms.py        # Django forms
-│   └── admin.py        # Admin config
-├── static/             # CSS and JS
-├── media/              # User uploads
+│   │   ├── core/           # All page templates
+│   │   └── registration/   # Login and register templates
+│   ├── templatetags/       # Custom template filters
+│   ├── models.py           # Profile, Company, Job, Application, SavedJob
+│   ├── views.py            # All views
+│   ├── urls.py             # URL routing
+│   ├── forms.py            # Django forms
+│   └── admin.py            # Admin configuration
+├── static/                 # CSS and JS
+├── media/                  # User uploads
 ├── requirements.txt
 ├── Procfile
+├── runtime.txt
 └── manage.py
 ```
 
@@ -70,13 +75,13 @@ xproject/
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/xproject.git
-cd xproject
+git clone https://github.com/DSBaibhav/WorksNest.git
+cd WorksNest
 ```
 
 ### 2. Create and activate virtual environment
 ```bash
-python -m venv venv
+python3 -m venv venv
 source venv/bin/activate        # Mac/Linux
 venv\Scripts\activate           # Windows
 ```
@@ -114,7 +119,12 @@ Visit `http://127.0.0.1:8000`
 
 ---
 
-## 🌐 Deployment (Render.com)
+## 🌐 Deployment
+
+This project is deployed on **Render.com** using:
+- **Gunicorn** as the production WSGI server
+- **Whitenoise** for serving static files
+- **PostgreSQL** as the production database
 
 ### Environment Variables on Render
 ```
@@ -158,18 +168,24 @@ gunicorn WorksNest.wsgi
 ## 👤 User Roles
 
 **Job Seeker**
-- Can browse, apply, save jobs
-- Has personal profile with resume
+- Can browse, search, apply and save jobs
+- Has personal profile with resume upload
+- Can track application status in real time
 
 **Recruiter**
-- Can post and manage jobs
-- Has company profile
-- Can review and update application statuses
+- Can post and manage job listings
+- Has company profile with logo
+- Can review applications and update their status
+
+---
+
+## 👨‍💻 Author
+
+**DSBaibhav**
+- GitHub: [@DSBaibhav](https://github.com/DSBaibhav)
 
 ---
 
 ## 📄 License
 
 ©️ 2026 WorksNest. All rights reserved.
-# WorksNest
-# WorksNest

@@ -185,7 +185,14 @@ gunicorn WorksNest.wsgi
 - GitHub: [@DSBaibhav](https://github.com/DSBaibhav)
 
 ---
+## 🤝 Project Credits
 
+This project was collaboratively built by:
+
+- **Baibhav Singh** – Lead Developer, Architecture, Core Implementation  
+- **Aakrity Mishra** – Logic Development, Feature Support, Testing
+
+---
 ## 📄 License
 
 ©️ 2026 WorksNest. All rights reserved.

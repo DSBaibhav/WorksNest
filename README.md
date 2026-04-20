@@ -179,10 +179,11 @@ gunicorn WorksNest.wsgi
 
 ---
 
-## 👨‍💻 Author
+## 👨‍💻 Authors
 
 **DSBaibhav**
 - GitHub: [@DSBaibhav](https://github.com/DSBaibhav)
+- Github: [@AakrityMishra](https://github.com/aakritymishra007)
 
 ---
 ## 🤝 Project Credits

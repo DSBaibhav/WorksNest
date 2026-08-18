@@ -171,7 +171,7 @@ def profile_edit(request):
             request.user.email = request.POST.get('email', '')
             request.user.save()
             messages.success(request, 'Profile updated!')
-            return redirect('profile')
+            return redirect('profile_view')
     else:
         form = ProfileForm(instance=profile)
     return render(request, 'core/profile_edit.html', {'form': form})

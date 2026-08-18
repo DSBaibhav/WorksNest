@@ -1,1 +1,1 @@
-web: gunicorn WorksNest.wsgi --log-file -
+web: gunicorn xproject.wsgi --log-file -
